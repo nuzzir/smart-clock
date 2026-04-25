@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Clock Dashboard</title>
+<title>Full Screen Clock</title>
 
 <style>
 * {
@@ -21,137 +21,48 @@ body {
 
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-}
-
-/* =========================
-   TOP SECTION
-========================= */
-
-.top-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding-top: 15px;
 }
 
 /*
-BIG CLOCK
-Main focal point
-Sized to fit properly
+MAIN CLOCK
+Largest possible while staying on one line
+This is now the main focal point
 */
 
 #time {
-  font-size: 17vw;
+  font-size: 18vw;
   font-weight: 300;
   line-height: 1;
   text-align: center;
+  white-space: nowrap;
   letter-spacing: 1px;
-  margin-top: 10px;
-  white-space: nowrap; /* keeps AM/PM on same line */
 }
 
-/* DATE */
+/*
+DATE
+Smaller and clean underneath
+*/
 
 #date {
-  margin-top: 12px;
-  font-size: 2.3vw;
+  margin-top: 20px;
+  font-size: 3vw;
   opacity: 0.9;
   text-align: center;
 }
 
-/* =========================
-   WEATHER SECTION
-========================= */
-
-#weather {
-  width: 100%;
-  padding: 10px 30px 22px 30px;
-}
-
-/* CURRENT WEATHER */
-
-.current-weather {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.current-icon {
-  font-size: 3.8vw;
-  margin-right: 15px;
-}
-
-.current-text {
-  font-size: 1.9vw;
-  font-weight: 400;
-}
-
-/* =========================
-   FORECAST ROW
-========================= */
-
-.forecast-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.forecast-day {
-  flex: 1;
-  text-align: center;
-  padding: 0 4px;
-}
-
-.day-name {
-  font-size: 1.45vw;
-  margin-bottom: 6px;
-  opacity: 0.95;
-}
-
-.day-icon {
-  font-size: 2.6vw;
-  margin-bottom: 6px;
-}
-
-.day-temp {
-  font-size: 1.5vw;
-  font-weight: 500;
-}
-
-/* Tablet fallback */
+/*
+Tablet adjustments
+*/
 
 @media (max-width: 1000px) {
   #time {
-    font-size: 19vw;
+    font-size: 20vw;
   }
 
   #date {
-    font-size: 3.8vw;
-  }
-
-  .current-icon {
-    font-size: 6vw;
-  }
-
-  .current-text {
-    font-size: 3.5vw;
-  }
-
-  .day-name {
-    font-size: 2.5vw;
-  }
-
-  .day-icon {
     font-size: 4.5vw;
-  }
-
-  .day-temp {
-    font-size: 2.6vw;
   }
 }
 </style>
@@ -159,26 +70,10 @@ Sized to fit properly
 
 <body>
 
-<div class="top-section">
-  <div id="time"></div>
-  <div id="date"></div>
-</div>
-
-<div id="weather"></div>
+<div id="time"></div>
+<div id="date"></div>
 
 <script>
-const apiKey = "2f0f92d0a7ad1530f7228c3b8eae93a7";
-
-/*
-Lake Mary, FL Coordinates
-*/
-const lat = 28.7589;
-const lon = -81.3178;
-
-/* =========================
-   CLOCK
-========================= */
-
 function updateTime() {
   const now = new Date();
 
@@ -200,134 +95,8 @@ function updateTime() {
     });
 }
 
-/* =========================
-   WEATHER ICONS
-========================= */
-
-function getIcon(iconCode) {
-  const iconMap = {
-    "01d": "☀️",
-    "01n": "🌙",
-    "02d": "⛅",
-    "02n": "☁️",
-    "03d": "☁️",
-    "03n": "☁️",
-    "04d": "☁️",
-    "04n": "☁️",
-    "09d": "🌧️",
-    "09n": "🌧️",
-    "10d": "🌦️",
-    "10n": "🌧️",
-    "11d": "⛈️",
-    "11n": "⛈️",
-    "13d": "❄️",
-    "13n": "❄️",
-    "50d": "🌫️",
-    "50n": "🌫️"
-  };
-
-  return iconMap[iconCode] || "☁️";
-}
-
-/* =========================
-   WEATHER
-========================= */
-
-async function updateWeather() {
-  try {
-    const currentUrl =
-      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`;
-
-    const forecastUrl =
-      `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`;
-
-    const [currentRes, forecastRes] = await Promise.all([
-      fetch(currentUrl),
-      fetch(forecastUrl)
-    ]);
-
-    const currentData = await currentRes.json();
-    const forecastData = await forecastRes.json();
-
-    /* Current Weather */
-
-    const currentTemp = Math.round(currentData.main.temp);
-    const currentDesc = currentData.weather[0].description;
-    const currentIcon = getIcon(currentData.weather[0].icon);
-
-    /* Forecast */
-
-    let daily = {};
-
-    forecastData.list.forEach(item => {
-      const date = item.dt_txt.split(" ")[0];
-
-      if (!daily[date]) {
-        daily[date] = {
-          temps: [],
-          icon: item.weather[0].icon.replace("n", "d")
-        };
-      }
-
-      daily[date].temps.push(item.main.temp);
-    });
-
-    let forecastHTML = `<div class="forecast-row">`;
-
-    Object.keys(daily).slice(0, 5).forEach(date => {
-      const d = new Date(date);
-
-      const dayName = d.toLocaleDateString(undefined, {
-        weekday: "short"
-      });
-
-      const temps = daily[date].temps;
-      const high = Math.round(Math.max(...temps));
-      const low = Math.round(Math.min(...temps));
-      const icon = getIcon(daily[date].icon);
-
-      forecastHTML += `
-        <div class="forecast-day">
-          <div class="day-name">${dayName}</div>
-          <div class="day-icon">${icon}</div>
-          <div class="day-temp">${high}° / ${low}°</div>
-        </div>
-      `;
-    });
-
-    forecastHTML += `</div>`;
-
-    document.getElementById("weather").innerHTML = `
-      <div class="current-weather">
-        <div class="current-icon">${currentIcon}</div>
-        <div class="current-text">
-          ${currentTemp}°F • ${currentDesc}
-        </div>
-      </div>
-
-      ${forecastHTML}
-    `;
-
-  } catch (error) {
-    console.error("Weather Error:", error);
-
-    document.getElementById("weather").innerHTML = `
-      <div style="text-align:center; font-size:2vw;">
-        Weather unavailable
-      </div>
-    `;
-  }
-}
-
-/* =========================
-   AUTO UPDATE
-========================= */
-
 setInterval(updateTime, 1000);
-setInterval(updateWeather, 600000);
-
 updateTime();
-updateWeather();
 </script>
 
 </body>
