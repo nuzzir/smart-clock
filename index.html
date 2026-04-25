@@ -34,24 +34,29 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding-top: 30px;
+  padding-top: 10px;
 }
 
-/* HUGE TIME = MAIN FOCAL POINT */
+/*
+HUGE CLOCK
+MAIN FOCAL POINT
+Now MUCH larger
+*/
 
 #time {
-  font-size: 12vw;
+  font-size: 22vw;
   font-weight: 300;
-  line-height: 1;
+  line-height: 0.9;
   text-align: center;
   letter-spacing: 2px;
+  margin-top: 10px;
 }
 
 /* DATE */
 
 #date {
-  margin-top: 15px;
-  font-size: 2.6vw;
+  margin-top: 18px;
+  font-size: 2.4vw;
   opacity: 0.9;
   text-align: center;
 }
@@ -62,7 +67,7 @@ body {
 
 #weather {
   width: 100%;
-  padding: 20px 30px 30px 30px;
+  padding: 10px 30px 25px 30px;
 }
 
 /* CURRENT WEATHER */
@@ -71,16 +76,16 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 22px;
+  margin-bottom: 18px;
 }
 
 .current-icon {
-  font-size: 4.2vw;
+  font-size: 4vw;
   margin-right: 18px;
 }
 
 .current-text {
-  font-size: 2.2vw;
+  font-size: 2vw;
   font-weight: 400;
 }
 
@@ -98,30 +103,30 @@ body {
 .forecast-day {
   flex: 1;
   text-align: center;
-  padding: 0 6px;
+  padding: 0 4px;
 }
 
 .day-name {
-  font-size: 1.7vw;
-  margin-bottom: 8px;
+  font-size: 1.5vw;
+  margin-bottom: 6px;
   opacity: 0.95;
 }
 
 .day-icon {
-  font-size: 3vw;
-  margin-bottom: 8px;
+  font-size: 2.8vw;
+  margin-bottom: 6px;
 }
 
 .day-temp {
-  font-size: 1.8vw;
+  font-size: 1.6vw;
   font-weight: 500;
 }
 
-/* Prevent overflow on smaller tablets */
+/* Tablet fallback */
 
 @media (max-width: 1000px) {
   #time {
-    font-size: 14vw;
+    font-size: 26vw;
   }
 
   #date {
@@ -137,7 +142,7 @@ body {
   }
 
   .day-name {
-    font-size: 3vw;
+    font-size: 2.8vw;
   }
 
   .day-icon {
@@ -249,7 +254,7 @@ async function updateWeather() {
     const currentDesc = currentData.weather[0].description;
     const currentIcon = getIcon(currentData.weather[0].icon);
 
-    /* Forecast Processing */
+    /* Forecast */
 
     let daily = {};
 
