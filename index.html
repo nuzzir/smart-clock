@@ -34,29 +34,30 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding-top: 10px;
+  padding-top: 15px;
 }
 
 /*
-HUGE CLOCK
-MAIN FOCAL POINT
-Now MUCH larger
+BIG CLOCK
+Main focal point
+Sized to fit properly
 */
 
 #time {
-  font-size: 22vw;
+  font-size: 17vw;
   font-weight: 300;
-  line-height: 0.9;
+  line-height: 1;
   text-align: center;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
   margin-top: 10px;
+  white-space: nowrap; /* keeps AM/PM on same line */
 }
 
 /* DATE */
 
 #date {
-  margin-top: 18px;
-  font-size: 2.4vw;
+  margin-top: 12px;
+  font-size: 2.3vw;
   opacity: 0.9;
   text-align: center;
 }
@@ -67,7 +68,7 @@ Now MUCH larger
 
 #weather {
   width: 100%;
-  padding: 10px 30px 25px 30px;
+  padding: 10px 30px 22px 30px;
 }
 
 /* CURRENT WEATHER */
@@ -76,16 +77,16 @@ Now MUCH larger
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .current-icon {
-  font-size: 4vw;
-  margin-right: 18px;
+  font-size: 3.8vw;
+  margin-right: 15px;
 }
 
 .current-text {
-  font-size: 2vw;
+  font-size: 1.9vw;
   font-weight: 400;
 }
 
@@ -107,18 +108,18 @@ Now MUCH larger
 }
 
 .day-name {
-  font-size: 1.5vw;
+  font-size: 1.45vw;
   margin-bottom: 6px;
   opacity: 0.95;
 }
 
 .day-icon {
-  font-size: 2.8vw;
+  font-size: 2.6vw;
   margin-bottom: 6px;
 }
 
 .day-temp {
-  font-size: 1.6vw;
+  font-size: 1.5vw;
   font-weight: 500;
 }
 
@@ -126,31 +127,31 @@ Now MUCH larger
 
 @media (max-width: 1000px) {
   #time {
-    font-size: 26vw;
+    font-size: 19vw;
   }
 
   #date {
-    font-size: 4vw;
+    font-size: 3.8vw;
   }
 
   .current-icon {
-    font-size: 7vw;
+    font-size: 6vw;
   }
 
   .current-text {
-    font-size: 4vw;
+    font-size: 3.5vw;
   }
 
   .day-name {
-    font-size: 2.8vw;
+    font-size: 2.5vw;
   }
 
   .day-icon {
-    font-size: 5vw;
+    font-size: 4.5vw;
   }
 
   .day-temp {
-    font-size: 3vw;
+    font-size: 2.6vw;
   }
 }
 </style>
@@ -166,7 +167,7 @@ Now MUCH larger
 <div id="weather"></div>
 
 <script>
-const apiKey = "2f0f92d0a7ad1530f7228c3b8eae93a7";
+const apiKey = "YOUR_API_KEY";
 
 /*
 Lake Mary, FL Coordinates
