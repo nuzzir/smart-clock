@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Clock Dashboard</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #000;
+  color: #fff;
+  font-family: "Segoe UI", Arial, sans-serif;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* =========================
+   TOP SECTION
+========================= */
+
+.top-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 30px;
+}
+
+/* HUGE TIME = MAIN FOCAL POINT */
+
+#time {
+  font-size: 12vw;
+  font-weight: 300;
+  line-height: 1;
+  text-align: center;
+  letter-spacing: 2px;
+}
+
+/* DATE */
+
+#date {
+  margin-top: 15px;
+  font-size: 2.6vw;
+  opacity: 0.9;
+  text-align: center;
+}
+
+/* =========================
+   WEATHER SECTION
+========================= */
+
+#weather {
+  width: 100%;
+  padding: 20px 30px 30px 30px;
+}
+
+/* CURRENT WEATHER */
+
+.current-weather {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.current-icon {
+  font-size: 4.2vw;
+  margin-right: 18px;
+}
+
+.current-text {
+  font-size: 2.2vw;
+  font-weight: 400;
+}
+
+/* =========================
+   FORECAST ROW
+========================= */
+
+.forecast-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.forecast-day {
+  flex: 1;
+  text-align: center;
+  padding: 0 6px;
+}
+
+.day-name {
+  font-size: 1.7vw;
+  margin-bottom: 8px;
+  opacity: 0.95;
+}
+
+.day-icon {
+  font-size: 3vw;
+  margin-bottom: 8px;
+}
+
+.day-temp {
+  font-size: 1.8vw;
+  font-weight: 500;
+}
+
+/* Prevent overflow on smaller tablets */
+
+@media (max-width: 1000px) {
+  #time {
+    font-size: 14vw;
+  }
+
+  #date {
+    font-size: 4vw;
+  }
+
+  .current-icon {
+    font-size: 7vw;
+  }
+
+  .current-text {
+    font-size: 4vw;
+  }
+
+  .day-name {
+    font-size: 3vw;
+  }
+
+  .day-icon {
+    font-size: 5vw;
+  }
+
+  .day-temp {
+    font-size: 3vw;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="top-section">
+  <div id="time"></div>
+  <div id="date"></div>
+</div>
+
+<div id="weather"></div>
+
+<script>
+const apiKey = "2f0f92d0a7ad1530f7228c3b8eae93a7";
+
+/*
+Lake Mary, FL Coordinates
+*/
+const lat = 28.7589;
+const lon = -81.3178;
+
+/* =========================
+   CLOCK
+========================= */
+
+function updateTime() {
+  const now = new Date();
+
+  let hours = now.getHours();
+  const minutes = now.getMinutes().toString().padStart(2, "0");
+  const ampm = hours >= 12 ? "PM" : "AM";
+
+  hours = hours % 12;
+  hours = hours ? hours : 12;
+
+  document.getElementById("time").innerHTML =
+    `${hours}:${minutes} ${ampm}`;
+
+  document.getElementById("date").innerHTML =
+    now.toLocaleDateString(undefined, {
+      weekday: "long",
+      month: "long",
+      day: "numeric"
+    });
+}
+
+/* =========================
+   WEATHER ICONS
+========================= */
+
+function getIcon(iconCode) {
+  const iconMap = {
+    "01d": "☀️",
+    "01n": "🌙",
+    "02d": "⛅",
+    "02n": "☁️",
+    "03d": "☁️",
+    "03n": "☁️",
+    "04d": "☁️",
+    "04n": "☁️",
+    "09d": "🌧️",
+    "09n": "🌧️",
+    "10d": "🌦️",
+    "10n": "🌧️",
+    "11d": "⛈️",
+    "11n": "⛈️",
+    "13d": "❄️",
+    "13n": "❄️",
+    "50d": "🌫️",
+    "50n": "🌫️"
+  };
+
+  return iconMap[iconCode] || "☁️";
+}
+
+/* =========================
+   WEATHER
+========================= */
+
+async function updateWeather() {
+  try {
+    const currentUrl =
+      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`;
+
+    const forecastUrl =
+      `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`;
+
+    const [currentRes, forecastRes] = await Promise.all([
+      fetch(currentUrl),
+      fetch(forecastUrl)
+    ]);
+
+    const currentData = await currentRes.json();
+    const forecastData = await forecastRes.json();
+
+    /* Current Weather */
+
+    const currentTemp = Math.round(currentData.main.temp);
+    const currentDesc = currentData.weather[0].description;
+    const currentIcon = getIcon(currentData.weather[0].icon);
+
+    /* Forecast Processing */
+
+    let daily = {};
+
+    forecastData.list.forEach(item => {
+      const date = item.dt_txt.split(" ")[0];
+
+      if (!daily[date]) {
+        daily[date] = {
+          temps: [],
+          icon: item.weather[0].icon.replace("n", "d")
+        };
+      }
+
+      daily[date].temps.push(item.main.temp);
+    });
+
+    let forecastHTML = `<div class="forecast-row">`;
+
+    Object.keys(daily).slice(0, 5).forEach(date => {
+      const d = new Date(date);
+
+      const dayName = d.toLocaleDateString(undefined, {
+        weekday: "short"
+      });
+
+      const temps = daily[date].temps;
+      const high = Math.round(Math.max(...temps));
+      const low = Math.round(Math.min(...temps));
+      const icon = getIcon(daily[date].icon);
+
+      forecastHTML += `
+        <div class="forecast-day">
+          <div class="day-name">${dayName}</div>
+          <div class="day-icon">${icon}</div>
+          <div class="day-temp">${high}° / ${low}°</div>
+        </div>
+      `;
+    });
+
+    forecastHTML += `</div>`;
+
+    document.getElementById("weather").innerHTML = `
+      <div class="current-weather">
+        <div class="current-icon">${currentIcon}</div>
+        <div class="current-text">
+          ${currentTemp}°F • ${currentDesc}
+        </div>
+      </div>
+
+      ${forecastHTML}
+    `;
+
+  } catch (error) {
+    console.error("Weather Error:", error);
+
+    document.getElementById("weather").innerHTML = `
+      <div style="text-align:center; font-size:2vw;">
+        Weather unavailable
+      </div>
+    `;
+  }
+}
+
+/* =========================
+   AUTO UPDATE
+========================= */
+
+setInterval(updateTime, 1000);
+setInterval(updateWeather, 600000);
+
+updateTime();
+updateWeather();
+</script>
+
+</body>
+</html>
